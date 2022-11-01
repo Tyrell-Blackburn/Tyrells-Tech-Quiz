@@ -13,13 +13,18 @@ body {
 }
 
 .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 600px;
     width: 500px;
     background-color: lightgrey;
     text-align: center;
 }
 
-.title {
-    padding-top: 50px;
+.question-text {
+    font-size: 16px;
+    margin: 60px 50px 0;
 }
 
 .category-container {
@@ -40,6 +45,34 @@ body {
     display: none;
 }
 
+.answers {
+    padding: 0 50px;
+    text-align: left;
+    list-style: none;
+    font-size: 16px;
+}
+
+.answer {
+    background:
+        url("data:image/svg+xml, <svg width='22' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' ><path d='M5 2c-1.654 0-3 1.346-3 3v14c0 1.654 1.346 3 3 3h14c1.654 0 3-1.346 3-3v-14c0-1.654-1.346-3-3-3h-14zm19 3v14c0 2.761-2.238 5-5 5h-14c-2.762 0-5-2.239-5-5v-14c0-2.761 2.238-5 5-5h14c2.762 0 5 2.239 5 5z'/></svg>")
+        no-repeat; /* <-- change `left` & `top` too for extra control */
+    padding: 2px 0px 5px 30px;
+    margin-bottom: 10px;
+    /* reset styles (optional): */
+}
+
+.answer:hover {
+    cursor: pointer;
+}
+
+.selected {
+    color: green;
+    background:
+    url("data:image/svg+xml, <svg width='23' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' ><path d='M19 0h-14c-2.762 0-5 2.239-5 5v14c0 2.761 2.238 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-8.959 17l-4.5-4.319 1.395-1.435 3.08 2.937 7.021-7.183 1.422 1.409-8.418 8.591z'/></svg>")
+    no-repeat; /* <-- change `left` & `top` too for extra control */
+    /* reset styles (optional): */
+}
+
 .nav-buttons {
     background-color: orangered;
     display: flex;
@@ -47,3 +80,4 @@ body {
     justify-content: space-around;
     height: 100px;
 }
+
