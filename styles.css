@@ -5,7 +5,7 @@ body {
 
 .body-container {
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
     align-items: center;
     justify-content: center;
@@ -16,7 +16,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 600px;
+    min-height: 600px;
     width: 500px;
     background-color: lightgrey;
     text-align: center;
@@ -25,6 +25,11 @@ body {
 .question-text {
     font-size: 16px;
     margin: 60px 50px 0;
+}
+
+.question-text-summary {
+    font-size: 16px;
+    margin: 30px 0;
 }
 
 .category-container {
@@ -53,9 +58,9 @@ body {
 }
 
 .answer {
-    background:
-        url("data:image/svg+xml, <svg width='22' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' ><path d='M5 2c-1.654 0-3 1.346-3 3v14c0 1.654 1.346 3 3 3h14c1.654 0 3-1.346 3-3v-14c0-1.654-1.346-3-3-3h-14zm19 3v14c0 2.761-2.238 5-5 5h-14c-2.762 0-5-2.239-5-5v-14c0-2.761 2.238-5 5-5h14c2.762 0 5 2.239 5 5z'/></svg>")
-        no-repeat; /* <-- change `left` & `top` too for extra control */
+    background: /* blank box https://iconmonstr.com/checkbox-11-svg/ */
+        url("data:image/svg+xml, <svg width='22' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M5 2c-1.654 0-3 1.346-3 3v14c0 1.654 1.346 3 3 3h14c1.654 0 3-1.346 3-3v-14c0-1.654-1.346-3-3-3h-14zm19 3v14c0 2.761-2.238 5-5 5h-14c-2.762 0-5-2.239-5-5v-14c0-2.761 2.238-5 5-5h14c2.762 0 5 2.239 5 5z'/></svg>")
+        no-repeat;
     padding: 2px 0px 5px 30px;
     margin-bottom: 10px;
     /* reset styles (optional): */
@@ -65,12 +70,27 @@ body {
     cursor: pointer;
 }
 
-.selected {
+/* selected style */
+/* correct answer style true true */
+.selected, .correct {
     color: green;
-    background:
-    url("data:image/svg+xml, <svg width='23' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' ><path d='M19 0h-14c-2.762 0-5 2.239-5 5v14c0 2.761 2.238 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-8.959 17l-4.5-4.319 1.395-1.435 3.08 2.937 7.021-7.183 1.422 1.409-8.418 8.591z'/></svg>")
+    background: /* tick https://iconmonstr.com/checkbox-9-svg/ */
+    url("data:image/svg+xml, <svg width='23' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M19 0h-14c-2.762 0-5 2.239-5 5v14c0 2.761 2.238 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-8.959 17l-4.5-4.319 1.395-1.435 3.08 2.937 7.021-7.183 1.422 1.409-8.418 8.591z'/></svg>")
     no-repeat; /* <-- change `left` & `top` too for extra control */
     /* reset styles (optional): */
+}
+
+/* incorrectly answer style true false */
+.incorrect {
+    color: red; /* maybe remove this - cross is enough */
+    background: /* cross */
+    url("data:image/svg+xml, <svg width='23' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M22 2v20h-20v-20h20zm2-2h-24v24h24v-24zm-6 16.538l-4.592-4.548 4.546-4.587-1.416-1.403-4.545 4.589-4.588-4.543-1.405 1.405 4.593 4.552-4.547 4.592 1.405 1.405 4.555-4.596 4.591 4.55 1.403-1.416z'/></svg>")
+    no-repeat;
+}
+
+/* correct answer revealed false true */
+.reveal {
+    color: green;
 }
 
 .nav-buttons {
@@ -79,5 +99,5 @@ body {
     align-items: center;
     justify-content: space-around;
     height: 100px;
+    margin-top: 30px;
 }
-

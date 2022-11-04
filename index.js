@@ -1,17 +1,15 @@
+// to fix
+// The catgeories are working propertly. If I choose Javascript, sometimes Linux questions make their way in.
+
 // API details
 const API_KEY = 'Yi10Tcq5s45Fu9LFkuSlfBEdEgHKk5Bm23h3S5fD';
 const TOTAL_QUESTIONS_TO_GET = '10';
 
-// container to print elements to
+// container div
 let container;
+
 // nav-buttons div
 let navButtons;
-
-// not used
-// let state = {
-//     currentQuestion: 0,
-//     json: null,
-// }
 
 // array to hold scores
 let score;
@@ -24,41 +22,92 @@ let json;
 
 const showScorePage = () => {
 
-    console.log(score[currentQuestion]);
-    console.log(score.length);
-
-    for (let i = 0; i < score.length; i ++) {
-        console.log('score:', score[i]);
-        console.log('json :', json[i].correct_answers);
-    }
-
-
-
-    // display the questions and the scores
-
-    // add a restart button
-    // clear the json object
-
-
-
-
+    totalScore = 0;
 
     container.innerHTML = `
         <header>
             <h2>Results Breakdown</h2>
-            <h3>You got X% correct</h3>
         </header>
-        <ol class="answers">
-            Question number
-            Question
-            answers
-            add class "wrong"  to selected answer
-            add class "corrrect" to correct answer
-        </ol>
+        <div class="answers">
+
+        </div>
         <footer class="nav-buttons">
             
         </footer>
     `
+    
+    // Build the question and answers list
+    let questionSummary = '';
+
+    for (let i = 0; i < score.length; i ++) {
+
+        // Add add the question to the page
+        questionSummary = questionSummary.concat(`
+            <h3 class='question-text-summary'>${json[i].question}</h3>
+        `);
+
+        for (let answer in score[i]) {
+            
+            const choiceText = json[i].answers[answer]; // answers object
+            const playerChoice = score[i][answer];
+            const correctChoice = json[i].correct_answers[`${answer}_correct`];
+
+            console.log(playerChoice, correctChoice, choiceText);
+
+            const answerElement = document.createElement('div'); // create answer list item
+            answerElement.textContent = choiceText; // add answer text to it
+            answerElement.classList.add('answer'); // add answer class to it
+            
+            if (playerChoice === 'true' && correctChoice === 'true') {
+                // if true true (player chose correctly) - tick and green text
+                answerElement.classList.add('correct');
+                totalScore ++;
+            } else if (playerChoice === 'true' && correctChoice === 'false') { 
+                // if true false (player chose incorrectly) = cross
+                answerElement.classList.add('incorrect');
+            } else if (playerChoice === 'false' && correctChoice === 'true') {
+                // if false true (showing correct answer player didn't choose) = green text and blank box
+                answerElement.classList.add('reveal');
+            }
+
+            questionSummary = questionSummary.concat(`
+                ${answerElement.outerHTML}
+            `);
+        }
+    }
+
+    // append list items to answers
+    const answersList = document.getElementsByClassName('answers')[0]; // select the answers div to add to
+    answersList.innerHTML = questionSummary; // add questions summary to answersList
+
+    // Add results breakdown
+    const header = document.getElementsByTagName('header')[0]; // select the answers div to add to
+    resultsPercentage = document.createElement('h3')
+    resultsPercentage.textContent = `You got ${totalScore} of ${TOTAL_QUESTIONS_TO_GET} questions correct (${totalScore/TOTAL_QUESTIONS_TO_GET * 100}%)`;
+    header.appendChild(resultsPercentage);
+
+    // display the questions and the scores
+
+
+    // container.innerHTML = `
+    //     <header>
+    //         <h2>Results Breakdown</h2>
+    //         <h3>You got X% correct</h3>
+    //     </header>
+    //     <ol class="answers">
+    //         <h3 class='question-text'>Question</h3>
+    //         Question number
+    //         Question
+    //         answers
+    //         add class "wrong"  to selected answer
+    //         add class "corrrect" to correct answer
+    //     </ol>
+    //     <footer class="nav-buttons">
+            
+    //     </footer>
+    // `
+
+
     // keeping score
     // have a structure that keeps track of
         // how many questions
@@ -72,6 +121,10 @@ const showScorePage = () => {
             // the answer
             // if it was correct or not
             // Main Menu button
+
+        
+
+
 
 
     // Restart button to start a new quiz
@@ -122,13 +175,28 @@ const toggleActiveAnswer = (answerElement, chosenAnswer) => {
 const printQuestion = () => {
     const numberOfQuestions = json.length; // total number of questions
 
-    // turn off loading screen and display questions
+    // style container for quiz
     container.style.justifyContent = 'space-between';
+    
+    // formatting the question text
+    const leftAnglebracket = /</g;
+    const rightAnglebracket = />/g;
+    
+    // This replaces special HTML characters < and > with literal text version.
+    // Needed as some questions have HTML code that gets interpreted literally and messes up the code.
+    let questionText = json[currentQuestion].question.replace(leftAnglebracket, '&lt;').replace(rightAnglebracket, '&gt;')
+    
+    // adds (Multiple Choice) to question if it is multiple choice
+    if (json[currentQuestion].multiple_correct_answers === 'true') {
+        questionText = questionText.concat(' (Multiple Choice)');
+    }
+
+    // turn off loading screen and display questions
     container.innerHTML = `
         <header>
             <h2>Question ${currentQuestion+1} of ${numberOfQuestions}</h2>
-            <h3 class='question-text'>${json[currentQuestion].question}</h3>
-        </header>
+            <h3 class='question-text'>${questionText}</h3>
+            </header>
         <ol class="answers">
             
         </ol>
@@ -136,7 +204,6 @@ const printQuestion = () => {
 
         </footer>
     `
-
     // Generate answer list items
     const answersList = document.getElementsByClassName('answers')[0]; // select the answers div to add to
     const allAnswers = json[currentQuestion].answers; // stores the answers object from the API (some may be null)
@@ -159,10 +226,8 @@ const printQuestion = () => {
             answerElement.addEventListener('click', e => {
                 if (json[currentQuestion].multiple_correct_answers === 'true') {
                     toggleActiveAnswer(e.currentTarget, answer); // if multiple choice
-                    console.log(score[currentQuestion]);
                 } else {
                     setActiveAnswer(e.currentTarget, answer); // if not multiple choice
-                    console.log(score[currentQuestion]);
                 }
             })
             answersList.appendChild(answerElement); // add question to class
