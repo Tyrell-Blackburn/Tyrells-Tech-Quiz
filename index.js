@@ -1,9 +1,6 @@
-// to fix
-// The catgeories are working propertly. If I choose Javascript, sometimes Linux questions make their way in.
-
 // API details
 const API_KEY = 'Yi10Tcq5s45Fu9LFkuSlfBEdEgHKk5Bm23h3S5fD';
-const TOTAL_QUESTIONS_TO_GET = '10';
+const TOTAL_QUESTIONS_TO_GET = '6'; // API supports 20 questions max at one time
 
 // container div
 let container;
@@ -22,7 +19,8 @@ let json;
 
 const showScorePage = () => {
 
-    totalScore = 0;
+    // End score - start at full points and deduct for 'incorrect' or 'reveal' answers
+    let totalScore = TOTAL_QUESTIONS_TO_GET;
 
     container.innerHTML = `
         <header>
@@ -39,12 +37,19 @@ const showScorePage = () => {
     // Build the question and answers list
     let questionSummary = '';
 
-    for (let i = 0; i < score.length; i ++) {
+    for (i = 0; i < score.length; i ++) {
+
+        // formatting the question text
+        const questionText = formatQuestionText(json[i].question, json[i].multiple_correct_answers);
 
         // Add add the question to the page
         questionSummary = questionSummary.concat(`
-            <h3 class='question-text-summary'>${json[i].question}</h3>
+            <h3 class='question-text-summary'>${questionText}</h3>
         `);
+
+         // "The external JavaScript file must contain the <script> tag."
+
+        let isIncorrectOrReveal = false;
 
         for (let answer in score[i]) {
             
@@ -52,29 +57,33 @@ const showScorePage = () => {
             const playerChoice = score[i][answer];
             const correctChoice = json[i].correct_answers[`${answer}_correct`];
 
-            console.log(playerChoice, correctChoice, choiceText);
-
             const answerElement = document.createElement('div'); // create answer list item
             answerElement.textContent = choiceText; // add answer text to it
             answerElement.classList.add('answer'); // add answer class to it
             
-            if (playerChoice === 'true' && correctChoice === 'true') {
-                // if true true (player chose correctly) - tick and green text
+            // if true true (player chose correctly) - tick and green text
+            if (playerChoice && correctChoice === 'true') {
                 answerElement.classList.add('correct');
-                totalScore ++;
-            } else if (playerChoice === 'true' && correctChoice === 'false') { 
+            } else if (playerChoice && correctChoice === 'false') { 
                 // if true false (player chose incorrectly) = cross
                 answerElement.classList.add('incorrect');
-            } else if (playerChoice === 'false' && correctChoice === 'true') {
+                isIncorrectOrReveal = true;
+            } else if (!playerChoice && correctChoice === 'true') {
                 // if false true (showing correct answer player didn't choose) = green text and blank box
                 answerElement.classList.add('reveal');
+                isIncorrectOrReveal = true;
             }
 
             questionSummary = questionSummary.concat(`
                 ${answerElement.outerHTML}
             `);
         }
+        
+        // If an 'incorrect' or 'reveal' is detected a point is deducted.
+        if(isIncorrectOrReveal) totalScore --;
     }
+
+    console.log(questionSummary);
 
     // append list items to answers
     const answersList = document.getElementsByClassName('answers')[0]; // select the answers div to add to
@@ -83,49 +92,9 @@ const showScorePage = () => {
     // Add results breakdown
     const header = document.getElementsByTagName('header')[0]; // select the answers div to add to
     resultsPercentage = document.createElement('h3')
-    resultsPercentage.textContent = `You got ${totalScore} of ${TOTAL_QUESTIONS_TO_GET} questions correct (${totalScore/TOTAL_QUESTIONS_TO_GET * 100}%)`;
+    const percentage = Math.round(totalScore/TOTAL_QUESTIONS_TO_GET * 100);
+    resultsPercentage.textContent = `You got ${totalScore} of ${TOTAL_QUESTIONS_TO_GET} questions correct (${percentage}%)`;
     header.appendChild(resultsPercentage);
-
-    // display the questions and the scores
-
-
-    // container.innerHTML = `
-    //     <header>
-    //         <h2>Results Breakdown</h2>
-    //         <h3>You got X% correct</h3>
-    //     </header>
-    //     <ol class="answers">
-    //         <h3 class='question-text'>Question</h3>
-    //         Question number
-    //         Question
-    //         answers
-    //         add class "wrong"  to selected answer
-    //         add class "corrrect" to correct answer
-    //     </ol>
-    //     <footer class="nav-buttons">
-            
-    //     </footer>
-    // `
-
-
-    // keeping score
-    // have a structure that keeps track of
-        // how many questions
-        // question number
-        // question answer
-        // if question is correct or not
-        // then at end let the structure build a page and present
-            // Total correct out of max questions
-            // percentage correct
-            // the question
-            // the answer
-            // if it was correct or not
-            // Main Menu button
-
-        
-
-
-
 
     // Restart button to start a new quiz
     navButtons = document.getElementsByClassName('nav-buttons')[0];
@@ -138,23 +107,24 @@ const showScorePage = () => {
 
 // FOR NON-MULTIPLE CHOICE - add selected class to answer element
 const setActiveAnswer = (answerElement, chosenAnswer) => {
-    
+    // console.log(answerElement, chosenAnswer)
     // select all answer elements
-    const answersElement = document.getElementsByClassName('answer');
+    const answersContainer = document.getElementsByClassName('answer');
 
-    // remove 'selected' class from answer elements
-    for (let answerElement of answersElement) {
-        answerElement.classList.remove('selected');
-    }
+    // remove 'selected' class from all answer elements
+    for (let answer of answersContainer) { answer.classList.remove('selected') };
 
     // add selected class to clicked answer element
     answerElement.classList.add('selected');
 
     // update scores
-    for (let possibleAnswer in score[currentQuestion]) {
-        if (possibleAnswer === chosenAnswer) score[currentQuestion][possibleAnswer] = 'true';
-        else score[currentQuestion][possibleAnswer] = 'false';
+    for (let answer in score[currentQuestion]) {
+        // turn the chosen answer to true
+        if (answer === chosenAnswer) score[currentQuestion][chosenAnswer] = true;
+        // other answers will be false
+        else score[currentQuestion][answer] = false;
     }
+    console.log(score[currentQuestion]);
 }
 
 // FOR MULTIPLE CHOICE - toggle selected class on answer element
@@ -163,13 +133,30 @@ const toggleActiveAnswer = (answerElement, chosenAnswer) => {
     // toggle selected class on clicked answer element
     answerElement.classList.toggle('selected');
 
-    // update scores
-    if (score[currentQuestion][chosenAnswer]) {
-        score[currentQuestion][chosenAnswer] = 'false';
+    // toggle answer values between true and false depending on what was clicked
+    if (score[currentQuestion][chosenAnswer] === true) {
+        console.log('turning true to false')
+        score[currentQuestion][chosenAnswer] = false;
     } else {
-        score[currentQuestion][chosenAnswer] = 'true';
+        console.log('turning false to true')
+        score[currentQuestion][chosenAnswer] = true;
     }
-    
+    console.log(score[currentQuestion]);
+}
+
+function formatQuestionText(questionText, isMultiple) {
+    const leftAnglebracket = /</g;
+    const rightAnglebracket = />/g;
+
+    // This replaces special HTML characters < and > with literal text version.
+    // Needed as some questions have HTML code that gets interpreted literally and messes up the code.
+    questionText = questionText.replace(leftAnglebracket, '&lt;').replace(rightAnglebracket, '&gt;');
+
+    // adds (Multiple Choice) to question if it is multiple choice
+    if (isMultiple === 'true') {
+        questionText = questionText.concat(' (Multiple Choice)');
+    }
+    return questionText;
 }
 
 const printQuestion = () => {
@@ -179,17 +166,7 @@ const printQuestion = () => {
     container.style.justifyContent = 'space-between';
     
     // formatting the question text
-    const leftAnglebracket = /</g;
-    const rightAnglebracket = />/g;
-    
-    // This replaces special HTML characters < and > with literal text version.
-    // Needed as some questions have HTML code that gets interpreted literally and messes up the code.
-    let questionText = json[currentQuestion].question.replace(leftAnglebracket, '&lt;').replace(rightAnglebracket, '&gt;')
-    
-    // adds (Multiple Choice) to question if it is multiple choice
-    if (json[currentQuestion].multiple_correct_answers === 'true') {
-        questionText = questionText.concat(' (Multiple Choice)');
-    }
+    const questionText = formatQuestionText(json[currentQuestion].question, json[currentQuestion].multiple_correct_answers);
 
     // turn off loading screen and display questions
     container.innerHTML = `
@@ -204,39 +181,58 @@ const printQuestion = () => {
 
         </footer>
     `
-    // Generate answer list items
-    const answersList = document.getElementsByClassName('answers')[0]; // select the answers div to add to
-    const allAnswers = json[currentQuestion].answers; // stores the answers object from the API (some may be null)
+    // Answers container div
+    const answersContainer = document.getElementsByClassName('answers')[0]; // select the answers div to add to
+    
+    // stores the answers object from the API (some may be null)
+    const jsonAnswers = json[currentQuestion].answers; 
+    // {
+    //     answer_a: "true",
+    //     answer_b: "false",
+    //     answer_c: null,
+    //     answer_d: null,
+    //     answer_e: null,
+    //     answer_f: null
+    // }
 
-    for (let answer in allAnswers) {
-        if (allAnswers[answer] !== null) { // if answer value exists (not null)
+    // copy the answers object from the API data into score array at current question index
+    // score[currentQuestion] = {...jsonAnswers};
 
-            // create answers object to later store player's answers
-            if (score[currentQuestion] === undefined) {
-                score[currentQuestion] = {[answer]: 'false' };
-            } else {
-                score[currentQuestion][answer] = 'false';
+    Object.keys(jsonAnswers).forEach(answer_x => {
+        if (jsonAnswers[answer_x]) { // if an answer value exists
+
+            // if score object not created
+            if (!score[currentQuestion]) {
+                // then create it
+                score[currentQuestion] = { [answer_x]: false }
+            } else if (!score[currentQuestion][answer_x]) {
+                // else if answer and value not created, then add with false value
+                Object.assign(score[currentQuestion], { [answer_x]: false });
+            } // otherwise leave existing answers as is
+
+            const answerElement = document.createElement('li'); // create a list item for it
+            answerElement.textContent = jsonAnswers[answer_x]; // give it the value as text
+            answerElement.classList.add('answer'); // add answer class to it
+
+            // add selected class if previously selected
+            if (score[currentQuestion][answer_x] === true) {
+                answerElement.classList.add('selected');
             }
             
-            const answerElement = document.createElement('li'); // create answer list item
-            answerElement.textContent = allAnswers[answer]; // add answer text to it
-            answerElement.classList.add('answer'); // add answer class to it
-            
-            // add click listener to answer list item
+            // add click listener to it
             answerElement.addEventListener('click', e => {
-                if (json[currentQuestion].multiple_correct_answers === 'true') {
-                    toggleActiveAnswer(e.currentTarget, answer); // if multiple choice
-                } else {
-                    setActiveAnswer(e.currentTarget, answer); // if not multiple choice
+                if (json[currentQuestion].multiple_correct_answers === 'true') { // if multiple choice
+                    toggleActiveAnswer(e.currentTarget, answer_x); // toggle answers
+                } else { // if not
+                    setActiveAnswer(e.currentTarget, answer_x); // then select answer
                 }
             })
-            answersList.appendChild(answerElement); // add question to class
-        }
-
-    }
+            answersContainer.appendChild(answerElement); // add question to class
+        } 
+    });
 
     // Adding nav buttons
-    navButtons = document.getElementsByClassName('nav-buttons')[0];
+    const navButtons = document.getElementsByClassName('nav-buttons')[0];
 
     // create prev button
     const prevButton = document.createElement('button');
@@ -272,7 +268,7 @@ const printQuestion = () => {
 
 const getQuestions = async (category, tags ='') => {
     
-    const url = `https://quizapi.io/api/v1/questions?apiKey=${API_KEY}&limit=${TOTAL_QUESTIONS_TO_GET}&${category}&${tags}`
+    const url = `https://quizapi.io/api/v1/questions?apiKey=${API_KEY}&limit=${TOTAL_QUESTIONS_TO_GET}&category=${category}&tags=${tags}`
 
     const response = await fetch(url);
 
@@ -280,7 +276,6 @@ const getQuestions = async (category, tags ='') => {
         console.log(`received response ${response.status}`);
         json = await response.json();
         console.log(json);
-        console.log(json[currentQuestion].correct_answers);
         printQuestion() // then print questions
     } else {
         console.log(`An error ${response.status} occured.`);
@@ -295,7 +290,7 @@ const start = () => {
     json = {};
     container = document.getElementsByClassName("container")[0];
     container.style.justifyContent = 'center';
- 
+
     container.innerHTML = `
         <header>
             <h1 class="title">Welcome to Quizify</h1>
@@ -327,16 +322,3 @@ const start = () => {
 };
 
 start();
-
-
-// var button = document.querySelector('button');
-// var paragraphs = document.querySelectorAll('p');
-// var containerSelecter = document.querySelector('.container p:first-of-type');
-
-// button.addEventListener('click', function () {
-//     console.log('click');
-//     containerSelecter.style.color = 'red'
-//     // for (var p of paragraphs) {
-//     //     p.style.color = 'red';
-//     // }
-// })
