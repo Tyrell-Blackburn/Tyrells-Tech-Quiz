@@ -1,33 +1,123 @@
+
+/* Copyright (c) 2016 by Jakob Fischer / pizzadude.dk. All rights reserved. */
+@font-face {
+    font-family: 'Pigment DEMO';
+    src: url('./fonts/PigmentDEMO.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Mouse+Memoirs&family=Open+Sans:wght@400;600&display=swap');
+
 body {
+    font-family: 'Mouse Memoirs', sans-serif;
+    color: #444444;
+}
+
+body, h1, h2, h3, h4, h5, ol {
     margin: 0;
     padding: 0;
+}
+
+a {
+    color: #186DFF;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #E7A192;
+    text-decoration: none;
+}
+
+.question-counter {
+    font-size: 36px;
+    margin-top: 30px;
+}
+
+.title, .sub-title {
+    font-family: 'Pigment DEMO';
+    font-weight: normal;
+    font-style: normal;
+}
+
+.title {
+    padding-top: 30px;
+    font-size: 100px;
+}
+
+.sub-title {
+    font-size: 30px;
+}
+
+.choose-category {
+    font-size: 24px;
+    padding-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.credits {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 30px 0;
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+.results-title {
+    padding-top: 40px;
+    padding-bottom: 0px;
+    font-size: 60px;
+}
+
+h3 {
+    font-size: 30px;
+}
+
+button {
+    font-family: 'Mouse Memoirs', sans-serif;
+    font-size: 16px;
+    background-color: #FFCBC0;
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0px 0px 2px 2px rgb(0,0,0);
+    letter-spacing: 1px;
+}
+
+button:hover {
+    background-color: #E5EDFB;
 }
 
 .body-container {
     display: flex;
     min-height: 100vh;
-    width: 100vw;
     align-items: center;
     justify-content: center;
-    background-color: antiquewhite;
+    /* background-color: antiquewhite; */
+    background-color: #FFF9C0;
 }
 
 .container {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-height: 600px;
+    min-height: 450px;
     width: 500px;
-    background-color: lightgrey;
+    /* background-color: lightgrey; */
     text-align: center;
 }
 
 .question-text {
+    font-family: 'Open Sans', sans-serif;
     font-size: 16px;
-    margin: 60px 50px 0;
+    margin: 30px 40px 0;
 }
 
 .question-text-summary {
+    font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     margin: 30px 0;
 }
@@ -37,12 +127,10 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    height: 150px;
-    background-color: pink;
+    height: 160px;
 }
 
 .category-button {
-    background-color: teal;
     width: 100px;
 }
 
@@ -63,10 +151,10 @@ body {
         no-repeat;
     padding: 2px 0px 5px 30px;
     margin-bottom: 10px;
-    /* reset styles (optional): */
+    font-family: 'Open Sans', sans-serif;
 }
 
-.answer:hover {
+.selectable:hover {
     cursor: pointer;
 }
 
@@ -94,10 +182,9 @@ body {
 }
 
 .nav-buttons {
-    background-color: orangered;
+    /* background-color: orangered; */
     display: flex;
     align-items: center;
     justify-content: space-around;
-    height: 100px;
-    margin-top: 30px;
+    height: 50px;
 }
