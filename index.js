@@ -95,13 +95,15 @@ const showScorePage = () => {
 
     // Add results breakdown
     const header = document.getElementsByTagName('header')[0]; // select the answers div to add to
-    resultsPercentage = document.createElement('h3')
+    resultsPercentage = document.createElement('h3');
+    resultsPercentage.classList.add('you-got-x-correct');
     const percentage = Math.round(totalScore/TOTAL_QUESTIONS_TO_GET * 100);
     resultsPercentage.textContent = `You got ${totalScore} of ${TOTAL_QUESTIONS_TO_GET} questions correct (${percentage}%)`;
     header.appendChild(resultsPercentage);
 
     // Restart button to start a new quiz
     navButtons = document.getElementsByClassName('nav-buttons')[0];
+    navButtons.style.marginBottom = '40px';
     const restartButton = document.createElement('button');
     restartButton.textContent = 'Restart';
     restartButton.classList.add('restart-btn');
@@ -162,7 +164,7 @@ const formatQuestionText = (questionText, isMultiple) => {
     return questionText;
 }
 
-const printQuestion = () => {
+const renderQuestion = () => {
     const numberOfQuestions = json.length; // total number of questions
     const isMultipleChoice = json[currentQuestion].multiple_correct_answers; // stores if it's a multiple choice question or not
 
@@ -234,7 +236,7 @@ const printQuestion = () => {
     });
 
     // Adding nav buttons
-    const navButtons = document.getElementsByClassName('nav-buttons')[0];
+    navButtons = document.getElementsByClassName('nav-buttons')[0];
 
     // create prev button
     const prevButton = document.createElement('button');
@@ -243,12 +245,39 @@ const printQuestion = () => {
     if (currentQuestion === 0) prevButton.style.visibility = 'hidden';
     navButtons.appendChild(prevButton);
 
+    // Div to hold error message if no answers are selected
+    const notEnoughSelectedDiv = document.createElement('div');
+    notEnoughSelectedDiv.classList.add('not-enough-selected');
+    navButtons.appendChild(notEnoughSelectedDiv);
+
     // create next button
     const nextButton = document.createElement('button');
     nextButton.textContent = 'Next';
     nextButton.classList.add('next-btn');
     // only add next button if player has not reached the last question
     if (currentQuestion < numberOfQuestions - 1) navButtons.appendChild(nextButton); 
+
+    const showSelectError = (element, isMultiple) => {
+        // make error visibile
+        element.style.visibility = 'visible';
+
+        // if multiple choice then enter text
+        isMultiple === 'true'
+            ? element.textContent = 'Select two or more more answers'
+            // if NOT multiple choice then enter text
+            : element.textContent = 'Select an answer';
+
+        // add fade-out animation
+        element.classList.add('animate__animated', 'animate__fadeOutUp', 'animate__delay-1s');
+
+        // when animation is finished
+        element.addEventListener('animationend', () => {
+            // remove animation classes
+            element.classList.remove('animate__animated', 'animate__fadeOutUp');
+            // hide div
+            element.style.visibility = 'hidden';
+        });
+    }
 
     // Add nav button listeners
     for (const button of navButtons.children) {
@@ -257,7 +286,7 @@ const printQuestion = () => {
         if (button.className === 'prev-btn') {
             button.addEventListener('click', () => {
                 currentQuestion --;
-                printQuestion(); // then go back
+                renderQuestion(); // then go back
             });
         }
 
@@ -266,8 +295,10 @@ const printQuestion = () => {
                 const isEnough = isEnoughAnswersSelected(isMultipleChoice);
                 if (isEnough) {
                     currentQuestion ++;
-                    printQuestion(); // then go back
-                } else alert('Select more answers before continuing');
+                    renderQuestion(); // then go back
+                } else {
+                    showSelectError(notEnoughSelectedDiv, isMultipleChoice);
+                }
             });
         }
     }
@@ -281,7 +312,9 @@ const printQuestion = () => {
         finishButton.addEventListener('click', () => {
             const isEnough = isEnoughAnswersSelected(isMultipleChoice);
             if (isEnough) showScorePage(); // then go back
-            else alert('Select more answers before continuing');
+            else {
+                showSelectError(notEnoughSelectedDiv, isMultipleChoice);
+            } 
         });
         navButtons.appendChild(finishButton);
     }
@@ -318,7 +351,7 @@ const getQuestions = async (category, tags ='') => {
     const url = `https://quizapi.io/api/v1/questions?apiKey=${API_KEY}&limit=${TOTAL_QUESTIONS_TO_GET}&category=${category}&tags=${tags}`
 
     // Display loading screen just before API CALL
-    container.innerHTML = `<div>Loading</div>`;
+    container.innerHTML = `<div class="loading">Loading ...</div>`;
     container.style.justifyContent = 'center';
     
     const response = await fetch(url);
@@ -370,7 +403,7 @@ const getQuestions = async (category, tags ='') => {
             getQuestions(category, tags);
         } 
 
-        printQuestion() // then print questions
+        renderQuestion() // then print questions
     } else {
         console.log(`An error ${response.status} occured.`);
         container.innerHTML = `<div>An error ${response.status} occured :(</div>`
