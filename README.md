@@ -5,7 +5,7 @@ Try the quiz out [here](https://tyrellblackburn.com/quiz)
 I built this to demonstrate my knowledge of raw HTML, CSS and Javascript.
 
 You can use it to test your own knowledge of Javascript, DevOps or Linux.
-It leverage the [Quiz API](https://quizapi.io/) for the quiz question and answer content.
+It leverages the [Quiz API](https://quizapi.io/) for the quiz question and answer content.
 
 ## Javascript features used
 
