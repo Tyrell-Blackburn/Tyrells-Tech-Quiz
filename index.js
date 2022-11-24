@@ -204,6 +204,7 @@ const renderQuestion = () => {
     Object.keys(jsonAnswers).forEach(answer_x => {
         if (jsonAnswers[answer_x]) { // if an answer value exists - ignores null value keys from API response
 
+            // writing to the object that keeps the scores
             // if score object not created
             if (!score[currentQuestion]) {
                 // then create it
