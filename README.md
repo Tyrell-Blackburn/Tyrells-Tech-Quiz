@@ -3,15 +3,15 @@
 This quiz will test your own knowledge of Javascript, DevOps or Linux - the choice is yours!
 Try the quiz out [here](https://tyrellblackburn.com/quiz)
 
-I built this to demonstrate my knowledge of pure HTML, CSS and Javascript.
+I built this to demonstrate my knowledge of pure HTML, CSS and Typescript.
 It leverages the [Quiz API](https://quizapi.io/) for the quiz questions and answers.
 
 ## Javascript features used
 
 1. GET requests using using Fetch
 2. API error checking - checks response codes and reports an error if an error is not 'ok'.
-3. API data filtering - if bugged questions are received the API makes another request.
-4. Questions that contain HTML elements are reformatted so they display as text and not literally interpreted as elements.
+3. API data refecthing if incomplete - if the data is incomplete and the questions cannot be used, another rquest is automatically made.
+4. Questions that contain HTML elements are reformatted with special entities so they display as text and interpreted as elements.
 5. String manipulation methods replace and concat
 6. for...of loops
 7. for...in loops

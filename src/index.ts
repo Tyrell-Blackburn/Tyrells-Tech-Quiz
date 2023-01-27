@@ -11,25 +11,22 @@ const TOTAL_QUESTIONS_TO_GET: string = "10"; // API supports 20 questions max at
 // container div
 let container: HTMLDivElement;
 
-// nav-buttons div
-// let navButtons;
-
 // array to hold scores
 let score = new Array(Number(TOTAL_QUESTIONS_TO_GET));
 
 // tracking index of current question
 let currentQuestion: number;
 
-type multiAnswers = {
-    [key: string]: string | null
-}
+type stringOrNull = string | null;
 
-type Answer = string | null;
+type multiAnswers = {
+    [key: string]: stringOrNull;
+}
 
 type QuizAPIData = {
     id: number,
     question: string,
-    description?: string,
+    description: stringOrNull,
     answers: multiAnswers,
     // {
     //     [answer_a:string]: Answer;
@@ -40,7 +37,7 @@ type QuizAPIData = {
     //     // [answer_f:string]: Answer,
     // },
     multiple_correct_answers: string,
-    correct_answers: multiAnswers,
+    correct_answers: {[key: string]: string},
     // {
     //     [answer_a_correct:string]: Answer,
     //     // answer_b_correct: Answer,
@@ -49,8 +46,8 @@ type QuizAPIData = {
     //     // answer_e_correct: Answer,
     //     // answer_f_correct: Answer,
     // },
-    correct_answer: string,
-    explanation: null,
+    correct_answer: stringOrNull,
+    explanation: stringOrNull,
     tip: null,
     tags: object[] | null,
     category: string,
@@ -405,7 +402,7 @@ const isEnoughAnswersSelected = (isMultipleChoice:string) => {
     }
 };
 
-const getQuestions = async (category: string, tags: string = "") => {
+const getQuestions = async (category: string | null, tags: string = "") => {
     const url = `https://quizapi.io/api/v1/questions?apiKey=${API_KEY}&limit=${TOTAL_QUESTIONS_TO_GET}&category=${category}&tags=${tags}`;
 
     // Display loading screen just before API CALL
@@ -510,7 +507,7 @@ const start = () => {
     for (let categoryButton of categoryButtons) {
         categoryButton.addEventListener("click", (e) => {
             // Get questions from API
-            const category: string = (e.target as HTMLButtonElement).textContent; // get the text of the button and assign it to category.
+            const category: string | null = (e.target as HTMLButtonElement).textContent; // get the text of the button and assign it to category.
 
             category === "JavaScript" // if category is Javascript.
                 ? getQuestions("Code", category) // Make the API call with JavaScript as a tag, so "Code" as the category.
